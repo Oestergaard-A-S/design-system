@@ -2,8 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
-import { buildLintData, isLintable, lintFiles } from '../lint/lint.js';
+import { HELPER_CLASSES, buildLintData, isLintable, lintFiles } from '../lint/lint.js';
 import { ICON_NODES } from '../site/icons.ts';
 import { TEMPLATES } from '../site/nav.ts';
 import { buildModel } from '../src/tokens.ts';
@@ -199,6 +200,21 @@ describe('oe-lint reporting', () => {
     expect(lint('a.css', '/* oe-lint-ignore: a one-off for the print view */\n.oe-card { padding: 0; }')).toEqual([]);
   });
 
+  it('treats helper classes as no component, since they give an element no look of their own', () => {
+    expect(lint('a.html', '<td class="oe-hide-narrow text-muted">x</td>')).toEqual([]);
+    expect(lint('a.html', '<span class="oe-sr-only text-sm">x</span>')).toEqual([]);
+    expect(lint('a.html', '<div class="oe-split bg-sunken"></div><td class="oe-table-truncate font-mono"></td>')).toEqual([]);
+    expect(lint('a.html', '<td class="oe-hide-narrow" style="color: var(--fg-muted)">x</td>')).toEqual([]);
+    expect(lint('a.css', '.oe-hide-narrow { color: var(--fg-muted); } .oe-stack > .mine { padding: 0; }')).toEqual([]);
+    // A real component next to a helper is still checked.
+    expect(lint('a.html', '<button class="oe-hide-narrow oe-btn p-0">x</button>')).toMatchObject([{ rule: 'restyled-component', message: expect.stringContaining('oe-btn is restyled') }]);
+    expect(lint('a.css', '.oe-split-side .oe-dl dt { color: var(--fg-default); }')).toMatchObject([{ rule: 'restyled-component', message: expect.stringContaining('oe-dl is restyled') }]);
+  });
+
+  it('only lists helper classes that exist', () => {
+    for (const name of HELPER_CLASSES) expect(data.classes, name).toContain(name);
+  });
+
   it('warns about a table with no wrapper', () => {
     expect(lint('a.html', '<table class="oe-table"></table>')).toMatchObject([{ rule: 'table-wrap', severity: 'warning' }]);
     expect(lint('a.html', '<div class="oe-table-wrap"><table class="oe-table"></table></div>')).toEqual([]);
@@ -216,7 +232,7 @@ describe('oe-lint reporting', () => {
 describe('the oe-lint command', () => {
   const dir = mkdtempSync(join(tmpdir(), 'oe-lint-'));
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
-  const run = (...args: string[]) => spawnSync(process.execPath, [new URL('../bin/oe-lint.js', import.meta.url).pathname, ...args], { cwd: dir, encoding: 'utf8' });
+  const run = (...args: string[]) => spawnSync(process.execPath, [fileURLToPath(new URL('../bin/oe-lint.js', import.meta.url)), ...args], { cwd: dir, encoding: 'utf8' });
 
   it('exits 0 for clean code', () => {
     writeFileSync(join(dir, 'clean.css'), '.x { color: var(--fg-default); }');
@@ -241,6 +257,24 @@ describe('the oe-lint command', () => {
     expect(run('--nope').status).toBe(2);
     expect(run('missing-folder').status).toBe(2);
   });
+
+  it('fails on warnings only past --max-warnings', () => {
+    writeFileSync(join(dir, 'warn.css'), '.oe-card { padding: 0; }');
+    expect(run('warn.css').status).toBe(0);
+    expect(run('warn.css', '--max-warnings', '1').status).toBe(0);
+    expect(run('warn.css', '--max-warnings=1').status).toBe(0);
+    const strict = run('warn.css', '--max-warnings', '0');
+    expect(strict.status).toBe(1);
+    expect(strict.stdout).toContain('0 errors, 1 warning in 1 file');
+    expect(strict.stdout).toContain('--max-warnings 0');
+    expect(JSON.parse(run('warn.css', '--json', '--max-warnings', '0').stdout)).toMatchObject({ warnings: 1, maxWarnings: 0 });
+  });
+
+  it('exits 2 for a --max-warnings that is not a whole number', () => {
+    for (const args of [['--max-warnings'], ['--max-warnings', 'x'], ['--max-warnings=-1'], ['warn.css', '--max-warnings', '1.5']]) {
+      expect(run(...args).status, args.join(' ')).toBe(2);
+    }
+  });
 });
 
 describe('the showcase', () => {
@@ -252,13 +286,13 @@ describe('the showcase', () => {
     });
 
   it('passes oe-lint with no findings', () => {
-    const root = new URL('../site', import.meta.url).pathname;
+    const root = fileURLToPath(new URL('../site', import.meta.url));
     expect(lintFiles(walk(root).map((path) => ({ path, text: readFileSync(path, 'utf8') })), data)).toEqual([]);
   });
 });
 
 describe('the page templates', () => {
-  const dir = new URL('../templates/', import.meta.url).pathname;
+  const dir = fileURLToPath(new URL('../templates/', import.meta.url));
   const names = readdirSync(dir).map((file) => file.replace('.html', ''));
   const text = (name: string) => readFileSync(join(dir, `${name}.html`), 'utf8');
 

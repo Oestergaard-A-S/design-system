@@ -1,6 +1,6 @@
 # Oestergaard design system: guide for agents
 
-Follow this when you write UI in an app that uses `@oestergaard/design-tokens`. Run `npx oe-lint src` before you finish, and fix every error it reports.
+Follow this when you write UI in an app that uses `@oestergaard/design-tokens`. Run the app's `lint:ui` script before you finish, and fix every error it reports. [The lint check](#the-lint-check) says how to set it up.
 
 ## Choosing what to use
 
@@ -51,14 +51,14 @@ The classes set the look only. You add behavior and ARIA, such as arrow keys for
 | Radio cards | `oe-radio-card` on a `<label>`, around an `oe-check` radio and `oe-radio-card-title` and `oe-radio-card-text` |
 | Slider | `oe-slider` on `<input type="range">` |
 | File upload | `oe-dropzone` on a `<label>`, around an `svg`, text and `<input type="file">`. Dropping a file works without JavaScript. A plain file input takes `oe-input` |
-| Badge | `oe-badge` with one of `oe-badge-accent`, `oe-badge-neutral`, `oe-badge-info`, `oe-badge-success`, `oe-badge-warning`, `oe-badge-danger`. Add `oe-badge-dot` for a status dot, or put an `oe-badge-remove` button inside for a removable tag |
+| Badge | `oe-badge` with one of `oe-badge-accent`, `oe-badge-neutral`, `oe-badge-info`, `oe-badge-success`, `oe-badge-warning`, `oe-badge-danger`. Add `oe-badge-dot` for a status dot, or put an `oe-badge-remove` button inside for a removable tag. A badge never grows wider than its container: put a long value in a `<span>` so it ends with an ellipsis, and give the badge a `title` with the full value |
 | Avatar | `oe-avatar` with initials or an `<img>`. Sizes are `oe-avatar-sm`, `oe-avatar-lg` and `oe-avatar-xl`. Use `oe-avatar-neutral` for a "+3" count, and `oe-avatar-group` to overlap several |
 | Alert | `oe-alert` with one of `oe-alert-accent`, `oe-alert-info`, `oe-alert-success`, `oe-alert-warning`, `oe-alert-danger`. Put the icon first, then one element of text, which can hold `oe-alert-title` and `oe-alert-actions`. An `oe-close` can come last |
 | Banner | `oe-banner` across the top of the page, with `oe-banner-accent`, `oe-banner-info`, `oe-banner-warning` or `oe-banner-danger`. Put the icon first, then one element of text |
 | Close button | `oe-close`, with an `aria-label` and an X icon |
 | Card | `oe-card`, with `oe-card-head` around `oe-card-title` and `oe-card-subtitle`, and `oe-card-foot` for buttons. A table directly inside lines up with the title. For a table running edge to edge, add `oe-card-flush`, which has no padding and gives the table's header a background, and wrap anything else that needs padding in `oe-card-body`. A full page of records goes in a flush card, with its toolbars and table directly inside |
 | Stat | `oe-stat` on a `<div>` around `oe-stat-label` on a `<dt>`, `oe-stat-value` on a `<dd>`, and `oe-stat-context` on a `<dd>` holding `oe-stat-delta` and what it's compared with. Delta colors say whether the change is good, not its direction: `oe-stat-delta-success`, `oe-stat-delta-danger`, or neither when it's neutral. It's already a card, so don't wrap it in one |
-| Table | `oe-table-wrap` around `oe-table`, which has no outer frame, with `oe-table-compact` for 40px rows or `oe-table-sticky`. Cells can use `oe-table-num`, `oe-table-empty`, `oe-table-actions`, `oe-table-select` and `oe-table-truncate`. Add `oe-table-reveal` to a repeated row action so it shows on hover and focus, and always on touch screens. Link a row's main cell with `oe-table-link`, with an optional `oe-list-subtitle` as a second line. Add `oe-hide-narrow` to columns that phones can do without, so the important ones fit without scrolling. Rows can use `oe-row-selected`. Sort buttons use `oe-table-sort`, with `aria-sort` on the `th`. Put totals in a `<tfoot>` |
+| Table | `oe-table-wrap` around `oe-table`, which has no outer frame, with `oe-table-compact` for 40px rows or `oe-table-sticky`. Cells can use `oe-table-num`, `oe-table-empty`, `oe-table-actions`, `oe-table-select` and `oe-table-truncate`. Add `oe-table-reveal` to a repeated row action so it shows on hover and focus, and always on touch screens. Link a row's main cell with `oe-table-link` on an `<a>`, or on a `<button>` when the row opens a drawer or dialog, with an optional `oe-list-subtitle` as a second line. Add `oe-hide-narrow` to columns that phones can do without, so the important ones fit without scrolling. A cell that can hold a long name or identifier, including the linked main cell, needs `oe-table-truncate`, or that one value sets the table's width on a phone. Rows can use `oe-row-selected`. Sort buttons use `oe-table-sort`, with `aria-sort` on the `th`. Put totals in a `<tfoot>` |
 | Toolbar | `oe-toolbar` directly above or below an `oe-table-wrap` or other content, with `oe-toolbar-end` for the right side. Add `oe-toolbar-selection` to the toolbar that shows in place of the filters while rows are selected, so the rows don't move. Announce the count in a `role="status"` element that's always there, and when clearing moves focus off the toolbar, send it to the select-all box |
 | Pagination | `oe-pagination` around links, with `aria-current="page"` on the current one. Use `<span aria-disabled="true">…</span>` for a gap |
 | Tabs | `oe-tabs` around elements with `aria-selected="true"` or `aria-current="page"`. Inside `oe-topbar` they fill the bar's height and scroll rather than wrap |
@@ -69,16 +69,17 @@ The classes set the look only. You add behavior and ARIA, such as arrow keys for
 | Popover | `oe-popover`. Without a library, see below |
 | Toast | `oe-toast`, or `oe-toast-info`, `oe-toast-success`, `oe-toast-warning` or `oe-toast-danger` for a colored icon. It can hold `oe-toast-title`, one `oe-btn` and an `oe-close`. Stack toasts in `oe-toaster`, with `role="status"` and `aria-live="polite"` |
 | Tooltip | `oe-tooltip`, which wraps at 240px. You place and show it, usually with a library. For an icon button, `title` is often enough |
-| Loading | `oe-spinner`, sized by font size. `oe-skeleton`, sized to match the real content. `oe-progress` on a `<progress>` |
+| Loading | `oe-spinner`, sized by font size. `oe-skeleton`, sized to match the real content. `oe-progress` on a `<progress>`. Its fill is the accent, which is also the first chart color, so add `oe-progress-neutral` when the bars compare values, such as a top-N list beside a chart |
 | Empty state | `oe-empty` around an `svg`, `oe-empty-title`, `oe-empty-text` and one `oe-btn` as the next step |
-| Description list | `oe-dl` on a `<dl>`, with each `<dt>` and `<dd>` in a `<div>` |
-| List rows | `oe-list` on a `<ul>`, with `oe-list-item` in each `<li>`, around an optional icon, `oe-list-text` with `oe-list-title` and `oe-list-subtitle`, and any buttons |
+| Description list | `oe-dl` on a `<dl>`, with each `<dt>` and `<dd>` in a `<div>`. Label and value sit side by side, and stack by themselves when the list is narrower than about 22rem, such as in `oe-split-side` |
+| List rows | `oe-list` on a `<ul>`, with `oe-list-item` in each `<li>`, around an optional icon, `oe-list-text` with `oe-list-title` and `oe-list-subtitle`, and any buttons. A row with the `hidden` attribute, such as one a filter removed, gets no divider. Inside a card, put the list directly in `oe-card` or `oe-card-body` so its text lines up with the title |
+| List text length | `oe-list-title` and `oe-list-subtitle` stay on one line and end with an ellipsis, which suits names and identifiers. For a description, which touch users can't read in a tooltip, add `oe-list-subtitle-wrap` to show all of it, or `oe-list-subtitle-clamp` to show up to two lines. Both also work in a table's main cell |
 | Timeline | `oe-timeline` on an `<ol>`, with `oe-timeline-item` around `oe-timeline-marker` and `oe-timeline-text`, which can hold `oe-timeline-time` |
 | Stepper | `oe-steps` on an `<ol>`, with `oe-step` on each `<li>`. Mark finished steps with `oe-step-done` and the current one with `aria-current="step"` |
 | Accordion | `oe-accordion` on each `<details>`, with a `<summary>` |
 | Separator | `oe-separator` on an `<hr>`. Add `aria-orientation="vertical"` inside a row |
 | Key hint | `oe-kbd` on a `<kbd>` |
-| Text | `oe-link` on a link, `oe-code` on inline `<code>`, `oe-code-block` on a `<pre>`, `oe-prose` around long text that can't carry classes, such as Markdown output, and `oe-sr-only` for text only screen readers should get |
+| Text | `oe-link` on a link, `oe-code` on inline `<code>`, which breaks a long ID or hash rather than widening the page, `oe-code-block` on a `<pre>`, `oe-prose` around long text that can't carry classes, such as Markdown output, and `oe-sr-only` for text only screen readers should get |
 | App shell | See below |
 
 An `svg` placed directly inside a component gets the right size, so don't size it yourself.
@@ -227,6 +228,8 @@ From 64rem, the page is an inset panel and `oe-shell-main` scrolls rather than t
 
 Below 64rem, the document scrolls and the side nav is a drawer opened by `oe-shell-menu`, with no JavaScript. In a single-page app, call `hidePopover()` on it when the route changes. On phones, the breadcrumb shows only the current page, or a link back to the parent page when it has three or more levels.
 
+When the bar runs short of room, its buttons and `oe-topbar-actions` keep their size and the breadcrumb gives way, with an ellipsis on each part. Don't hide the breadcrumb on phones yourself, or the link back to the parent page goes with it.
+
 ## Page templates
 
 Start a new page from the closest template in `node_modules/@oestergaard/design-tokens/templates/`. Copy its structure into your framework, keep its classes, and replace the sample content and routes. Leave out the parts your page doesn't need.
@@ -250,7 +253,7 @@ These layouts wrap by themselves as room runs out:
 | Vertical spacing between a page's blocks | `oe-stack` |
 | Row of KPIs | `oe-stat-grid` on a `<dl>` around `oe-stat` |
 | Cards side by side | `oe-panels` |
-| Main and side columns | `oe-split` around the main column and `oe-split-side` |
+| Main and side columns | `oe-split` around the main column and `oe-split-side`. Add `oe-split-side-sticky` to keep the side column in view below the top bar beside a long main column, but only when the side column is shorter than the screen |
 | Grouped options, with the heading beside them | `oe-section` around a `<div>` with `oe-section-title` and `oe-section-text`, and then one element holding the content |
 | A page outside the shell | `oe-auth` around `oe-card oe-auth-card`, with `oe-auth-brand` |
 
@@ -309,8 +312,18 @@ Use `var(--chart-1)` to `var(--chart-8)`, or `import { chart } from "@oestergaar
 
 ## The lint check
 
-`npx oe-lint src` checks for raw colors, ramp variables, dark-mode overrides, names that don't exist and fills with the wrong text color. It also checks the markup: icon buttons need a name, inputs need a label, images need `alt`, and `oe-dialog` goes on a `<dialog>`. It exits with an error if it finds any.
+Add a script to the app's `package.json`, and run it with the app's package manager, such as `npm run lint:ui`, `bun run lint:ui` or `pnpm lint:ui`:
 
-It also warns when an app restyles an `oe-*` component with a CSS rule, an inline style or a utility. Placing one is fine: margins, width, and grid and flex placement. For anything else, use a variant, or add what's missing to the design system so every app gets it.
+```json
+"scripts": {
+  "lint:ui": "oe-lint src --max-warnings 0"
+}
+```
+
+The package isn't on the npm registry, so `npx oe-lint` can fail where the package was installed from GitHub, such as with bun on Windows. To run it once without the script, use `bunx oe-lint src` or `pnpm exec oe-lint src`.
+
+`oe-lint` checks for raw colors, ramp variables, dark-mode overrides, names that don't exist and fills with the wrong text color. It also checks the markup: icon buttons need a name, inputs need a label, images need `alt`, and `oe-dialog` goes on a `<dialog>`. It exits with an error if it finds any. `--max-warnings 0` makes it fail on warnings too, which suits CI.
+
+It also warns when an app restyles an `oe-*` component with a CSS rule, an inline style or a utility. Placing one is fine: margins, width, and grid and flex placement. Helpers that only place or hide an element, such as `oe-hide-narrow`, `oe-sr-only`, `oe-stack` and `oe-split`, aren't components, so styling an element that carries one is fine. For anything else, use a variant, or add what's missing to the design system so every app gets it.
 
 Fix the code rather than silencing the check. If a line truly needs an exception, such as a third-party brand color, add a comment containing `oe-lint-ignore` on that line or the one before it.

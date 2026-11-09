@@ -117,28 +117,29 @@
                     <p class="oe-card-subtitle">By revenue this month</p>
                   </div>
                 </div>
+                <!-- Neutral bars, so they don't read as one more series of the chart beside them. -->
                 <ul class="oe-list">
                   <li>
                     <div class="oe-list-item">
-                      <span class="oe-list-text"><span class="oe-list-title">Nordic Freight</span><progress class="oe-progress" value="124" max="124" aria-label="Nordic Freight: $12.4K"></progress></span>
+                      <span class="oe-list-text"><span class="oe-list-title">Nordic Freight</span><progress class="oe-progress oe-progress-neutral" value="124" max="124" aria-label="Nordic Freight: $12.4K"></progress></span>
                       <span>$12.4K</span>
                     </div>
                   </li>
                   <li>
                     <div class="oe-list-item">
-                      <span class="oe-list-text"><span class="oe-list-title">Fjord Marine</span><progress class="oe-progress" value="82" max="124" aria-label="Fjord Marine: $8.2K"></progress></span>
+                      <span class="oe-list-text"><span class="oe-list-title">Fjord Marine</span><progress class="oe-progress oe-progress-neutral" value="82" max="124" aria-label="Fjord Marine: $8.2K"></progress></span>
                       <span>$8.2K</span>
                     </div>
                   </li>
                   <li>
                     <div class="oe-list-item">
-                      <span class="oe-list-text"><span class="oe-list-title">Lund Transport</span><progress class="oe-progress" value="63" max="124" aria-label="Lund Transport: $6.3K"></progress></span>
+                      <span class="oe-list-text"><span class="oe-list-title">Lund Transport</span><progress class="oe-progress oe-progress-neutral" value="63" max="124" aria-label="Lund Transport: $6.3K"></progress></span>
                       <span>$6.3K</span>
                     </div>
                   </li>
                   <li>
                     <div class="oe-list-item">
-                      <span class="oe-list-text"><span class="oe-list-title">Havn Logistics</span><progress class="oe-progress" value="39" max="124" aria-label="Havn Logistics: $3.9K"></progress></span>
+                      <span class="oe-list-text"><span class="oe-list-title">Havn Logistics</span><progress class="oe-progress oe-progress-neutral" value="39" max="124" aria-label="Havn Logistics: $3.9K"></progress></span>
                       <span>$3.9K</span>
                     </div>
                   </li>
@@ -158,27 +159,28 @@
                   <thead>
                     <tr><th scope="col">Customer</th><th scope="col" class="oe-hide-narrow">Date</th><th scope="col">Status</th><th scope="col" class="oe-table-num">Amount</th></tr>
                   </thead>
+                  <!-- oe-table-truncate on the main cell, so a long name can't set the table's width on a phone. -->
                   <tbody>
                     <tr>
-                      <td><a class="oe-table-link" href="/orders/2041">Nordic Freight</a><span class="oe-list-subtitle">Order 2041</span></td>
+                      <td class="oe-table-truncate"><a class="oe-table-link" href="/orders/2041">Nordic Freight</a><span class="oe-list-subtitle">Order 2041</span></td>
                   <td class="oe-hide-narrow">Nov 5</td>
                       <td><span class="oe-badge oe-badge-success"><i data-lucide="circle-check"></i>Paid</span></td>
                       <td class="oe-table-num">$12,400</td>
                     </tr>
                     <tr>
-                      <td><a class="oe-table-link" href="/orders/2041">Fjord Marine</a><span class="oe-list-subtitle">Order 2040</span></td>
+                      <td class="oe-table-truncate"><a class="oe-table-link" href="/orders/2041">Fjord Marine</a><span class="oe-list-subtitle">Order 2040</span></td>
                   <td class="oe-hide-narrow">Nov 4</td>
                       <td><span class="oe-badge oe-badge-warning"><i data-lucide="triangle-exclamation-point"></i>Due soon</span></td>
                       <td class="oe-table-num">$8,150</td>
                     </tr>
                     <tr>
-                      <td><a class="oe-table-link" href="/orders/2041">Havn Logistics</a><span class="oe-list-subtitle">Order 2039</span></td>
+                      <td class="oe-table-truncate"><a class="oe-table-link" href="/orders/2041">Havn Logistics</a><span class="oe-list-subtitle">Order 2039</span></td>
                   <td class="oe-hide-narrow">Oct 28</td>
                       <td><span class="oe-badge oe-badge-danger"><i data-lucide="circle-x"></i>Overdue</span></td>
                       <td class="oe-table-num">$3,920</td>
                     </tr>
                     <tr>
-                      <td><a class="oe-table-link" href="/orders/2041">Bakke Byg</a><span class="oe-list-subtitle">Order 2038</span></td>
+                      <td class="oe-table-truncate"><a class="oe-table-link" href="/orders/2041">Bakke Byg</a><span class="oe-list-subtitle">Order 2038</span></td>
                   <td class="oe-hide-narrow">Oct 27</td>
                       <td><span class="oe-badge oe-badge-info"><i data-lucide="info"></i>Draft</span></td>
                       <td class="oe-table-num">$1,780</td>
