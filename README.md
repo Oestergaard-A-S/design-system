@@ -94,14 +94,14 @@ With Tailwind, import `tailwind.css` first instead of `tokens.css`.
 | Popover | `oe-popover` |
 | Menu | `oe-menu`, `oe-menu-item`, `oe-menu-item-danger`, `oe-menu-heading`, `oe-menu-separator`, `oe-menu-shortcut` |
 | Toast, tooltip | `oe-toast` with `-info`, `-success`, `-warning` or `-danger`, `oe-toast-title`, `oe-toaster`; `oe-tooltip`. The app places and shows them |
-| Loading | `aria-busy="true"` on an `oe-btn`; `oe-spinner`, `oe-skeleton`, `oe-progress` |
+| Loading | `aria-busy="true"` on an `oe-btn`; `oe-spinner`, `oe-skeleton`, `oe-progress` with `-neutral` |
 | Switch, key hint | `oe-switch`; `oe-kbd` |
 | Input with icon | `oe-input-group` |
 | Empty state | `oe-empty`, `oe-empty-title`, `oe-empty-text` |
 | Pagination, separator, accordion | `oe-pagination`; `oe-separator`; `oe-accordion` |
 | Toolbar | `oe-toolbar`, `oe-toolbar-end`, `oe-toolbar-selection` |
-| Page layout | `oe-page-narrow`; `oe-skip-link`; `oe-hide-narrow`; `oe-stack`; `oe-stat-grid`; `oe-panels`; `oe-split`, `oe-split-side`; `oe-section`, `oe-section-title`, `oe-section-text`; `oe-auth`, `oe-auth-card`, `oe-auth-brand` |
-| Content | `oe-dl`; `oe-list`, `oe-list-item`, `oe-list-text`, `oe-list-title`, `oe-list-subtitle`; `oe-timeline`, `oe-timeline-item`, `oe-timeline-marker`, `oe-timeline-text`, `oe-timeline-time`; `oe-steps`, `oe-step`, `oe-step-done` |
+| Page layout | `oe-page-narrow`; `oe-skip-link`; `oe-hide-narrow`; `oe-stack`; `oe-stat-grid`; `oe-panels`; `oe-split`, `oe-split-side`, `oe-split-side-sticky`; `oe-section`, `oe-section-title`, `oe-section-text`; `oe-auth`, `oe-auth-card`, `oe-auth-brand` |
+| Content | `oe-dl`; `oe-list`, `oe-list-item`, `oe-list-text`, `oe-list-title`, `oe-list-subtitle` with `-wrap` or `-clamp`; `oe-timeline`, `oe-timeline-item`, `oe-timeline-marker`, `oe-timeline-text`, `oe-timeline-time`; `oe-steps`, `oe-step`, `oe-step-done` |
 | Text | `oe-link`, `oe-code`, `oe-code-block`, `oe-prose`, `oe-sr-only` |
 | Date picker day | `oe-calendar-day`, for a date picker library |
 | App shell | `oe-shell`, `oe-shell-main`, `oe-shell-menu`, `oe-shell-toggle`, `oe-topbar`, `oe-topbar-actions`, `oe-breadcrumb`, `oe-sidenav`, `oe-sidenav-brand`, `oe-sidenav-body`, `oe-sidenav-foot`, `oe-nav-heading`, `oe-nav-list`, `oe-nav-item`, `oe-avatar`, `oe-page`, `oe-page-head`, `oe-page-actions`, `oe-page-title`, `oe-page-subtitle` |
@@ -123,15 +123,23 @@ The package ships [AGENT-GUIDE.md](AGENT-GUIDE.md), a short guide for agents wri
 
 ```text
 Follow node_modules/@oestergaard/design-tokens/AGENT-GUIDE.md for all UI work.
-Run npx oe-lint src before finishing, and fix every error.
+Run the lint:ui script before finishing, and fix every error and warning.
 ```
 
-`oe-lint` needs no setup. It reads the installed version's real tokens and classes, so it also works as a check in an app's CI, where it exits with an error if it finds any.
+`oe-lint` needs no setup. It reads the installed version's real tokens and classes, so it also works as a check in an app's CI, where it exits with an error if it finds any. Add it to the app's `package.json` and run it with the app's package manager, such as `npm run lint:ui` or `bun run lint:ui`:
 
-```bash
-npx oe-lint src
-npx oe-lint src --json
+```json
+"scripts": {
+  "lint:ui": "oe-lint src --max-warnings 0"
+}
 ```
+
+The package isn't on the npm registry, so `npx oe-lint` can fail for a package installed from GitHub, such as with bun on Windows. To run it once, use `bunx oe-lint src` or `pnpm exec oe-lint src`.
+
+| Option | Does |
+| --- | --- |
+| `--json` | Prints the findings as JSON |
+| `--max-warnings <n>` | Also exits with an error when there are more than `n` warnings. `--max-warnings 0` fails on any warning |
 
 | Rule | Catches |
 | --- | --- |
@@ -151,7 +159,7 @@ npx oe-lint src --json
 | `img-alt` | An `<img>` with no `alt` |
 | `table-wrap` | A warning for `oe-table` outside `oe-table-wrap` |
 | `unlayered-reset` | A warning for element styles outside a CSS layer, which override the component classes |
-| `restyled-component` | A warning when an app changes how an `oe-*` component looks, through a CSS rule, an inline style or a utility. Margins, width, and grid and flex placement are fine. Adding `oe-lint-ignore` with a reason keeps each exception easy to search for |
+| `restyled-component` | A warning when an app changes how an `oe-*` component looks, through a CSS rule, an inline style or a utility. Margins, width, and grid and flex placement are fine, and so is styling an element whose only `oe-*` classes are helpers that place or hide it, such as `oe-hide-narrow` or `oe-split`. Adding `oe-lint-ignore` with a reason keeps each exception easy to search for |
 
 An app's own variables, `--color-*` theme colors and `.oe-*` classes count as real if the app declares them. Names built at runtime, such as `` var(--fg-on-${intent}) ``, can't be checked and are skipped. The markup rules only check native lowercase elements, because a component like `<Button>` may add the missing part itself. To allow one line, add a comment containing `oe-lint-ignore` on it or the line before.
 

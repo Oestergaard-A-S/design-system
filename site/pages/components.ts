@@ -265,6 +265,7 @@ const componentsPage = () => `
         <ul class="oe-list">
           <li><a class="oe-list-item" href="#">${lucideSvg('user')}<span class="oe-list-text"><span class="oe-list-title">Profile</span><span class="oe-list-subtitle">Name, email and photo</span></span>${lucideSvg('arrow-right')}</a></li>
           <li><div class="oe-list-item">${lucideSvg('bell')}<span class="oe-list-text"><span class="oe-list-title">Notifications</span><span class="oe-list-subtitle">Email and push</span></span><input class="oe-switch" type="checkbox" role="switch" checked aria-label="Notifications" /></div></li>
+          <li><a class="oe-list-item" href="#">${lucideSvg('file-text')}<span class="oe-list-text"><span class="oe-list-title">Order cost audit</span><span class="oe-list-subtitle oe-list-subtitle-clamp">Every work order with its planned and actual cost, refreshed each night, for finding orders that ran over budget and the steps that caused it.</span></span>${lucideSvg('arrow-right')}</a></li>
         </ul>
       </div>
       <div class="oe-card demo">
@@ -286,7 +287,7 @@ const componentsPage = () => `
           <p>Styled <a href="#">links</a>, <code>code</code> and lists, for text that can't carry classes.</p>
           <ul><li>Headings and paragraphs</li><li>Tables and quotes</li></ul>
         </div>
-        <pre class="oe-code-block" style="margin-top:var(--space-3)"><code>npx oe-lint src</code></pre>
+        <pre class="oe-code-block" style="margin-top:var(--space-3)"><code>npm run lint:ui</code></pre>
       </div>
       <div class="oe-card demo">
         <h2 class="card-title">Loading</h2>
@@ -300,6 +301,7 @@ const componentsPage = () => `
             <span class="oe-skeleton"></span>
           </div>
           <progress class="oe-progress" value="60" max="100" aria-label="Upload progress"></progress>
+          <progress class="oe-progress oe-progress-neutral" value="35" max="100" aria-label="Share of revenue"></progress>
         </div>
       </div>
       <div class="oe-card demo">

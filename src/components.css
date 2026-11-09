@@ -16,7 +16,7 @@
 
 @layer components {
   /* The display rules below would otherwise beat the hidden attribute. */
-  :is(.oe-btn, .oe-badge, .oe-alert, .oe-field, .oe-field-error, .oe-check-label, .oe-stat-label, .oe-stat-value, .oe-stat-delta, .oe-tabs, .oe-segmented, .oe-dialog-actions, .oe-menu-item, .oe-toast, .oe-toaster, .oe-close, .oe-btn-group, .oe-avatar-group, .oe-card-head, .oe-card-foot, .oe-dialog-head, .oe-alert-actions, .oe-form, .oe-form-row, .oe-form-actions, .oe-fieldset, .oe-radio-card, .oe-dropzone, .oe-dl, .oe-list-item, .oe-timeline-item, .oe-steps, .oe-step, .oe-banner, .oe-toolbar, .oe-sidenav, .oe-skeleton, .oe-progress, .oe-spinner, .oe-kbd, .oe-input-group, .oe-empty, .oe-pagination, .oe-avatar, .oe-shell, .oe-shell-main, .oe-topbar, .oe-topbar-actions, .oe-breadcrumb ol, .oe-sidenav-brand, .oe-sidenav-foot, .oe-nav-list, .oe-nav-item, .oe-page-head, .oe-input-select, .oe-slider, .oe-radio-card-title, .oe-radio-card-text, .oe-badge-remove, .oe-table-sort, .oe-toolbar-end, .oe-list-title, .oe-list-subtitle, .oe-timeline-marker, .oe-timeline-time, .oe-calendar-day, .oe-page-actions, .oe-shell-menu, .oe-shell-toggle, .oe-stack, .oe-stat-grid, .oe-panels, .oe-split, .oe-section, .oe-auth, .oe-auth-brand, .oe-table-link, .oe-skip-link, .oe-stat-context)[hidden],
+  :is(.oe-btn, .oe-badge, .oe-alert, .oe-field, .oe-field-error, .oe-check-label, .oe-stat-label, .oe-stat-value, .oe-stat-delta, .oe-tabs, .oe-segmented, .oe-dialog-actions, .oe-menu-item, .oe-toast, .oe-toaster, .oe-close, .oe-btn-group, .oe-avatar-group, .oe-card-head, .oe-card-foot, .oe-dialog-head, .oe-alert-actions, .oe-form, .oe-form-row, .oe-form-actions, .oe-fieldset, .oe-radio-card, .oe-dropzone, .oe-dl, .oe-list-item, .oe-timeline-item, .oe-steps, .oe-step, .oe-banner, .oe-toolbar, .oe-sidenav, .oe-skeleton, .oe-progress, .oe-spinner, .oe-kbd, .oe-input-group, .oe-empty, .oe-pagination, .oe-avatar, .oe-shell, .oe-shell-main, .oe-topbar, .oe-topbar-actions, .oe-breadcrumb ol, .oe-sidenav-brand, .oe-sidenav-foot, .oe-nav-list, .oe-nav-item, .oe-page-head, .oe-input-select, .oe-slider, .oe-radio-card-title, .oe-radio-card-text, .oe-badge-remove, .oe-table-sort, .oe-toolbar-end, .oe-list-title, .oe-list-subtitle, .oe-list-subtitle-clamp, .oe-timeline-marker, .oe-timeline-time, .oe-calendar-day, .oe-page-actions, .oe-shell-menu, .oe-shell-toggle, .oe-stack, .oe-stat-grid, .oe-panels, .oe-split, .oe-section, .oe-auth, .oe-auth-brand, .oe-table-link, .oe-skip-link, .oe-stat-context)[hidden],
   .oe-tabs > [hidden],
   .oe-segmented > [hidden],
   .oe-pagination > [hidden] {
@@ -106,7 +106,8 @@
   .oe-btn-sm > svg { width: calc(var(--spacing) * 3); height: calc(var(--spacing) * 3); }
   .oe-btn-lg { gap: calc(var(--spacing) * 2); min-height: calc(var(--spacing) * 10); padding-inline: calc(var(--spacing) * 4); font-size: var(--text-base); line-height: var(--text-base--line-height); }
   .oe-btn-lg > svg { width: calc(var(--spacing) * 5); height: calc(var(--spacing) * 5); }
-  .oe-btn-icon { width: calc(var(--spacing) * 8); padding: 0; }
+  /* Square, so it never gives up width to its neighbours in a row. */
+  .oe-btn-icon { flex: none; width: calc(var(--spacing) * 8); padding: 0; }
   .oe-btn-icon.oe-btn-sm { width: calc(var(--spacing) * 7); }
   .oe-btn-icon.oe-btn-lg { width: calc(var(--spacing) * 10); }
   .oe-btn[aria-pressed="true"] { background: var(--bg-accent-muted); color: var(--fg-accent); border-color: var(--border-accent-muted); }
@@ -263,6 +264,7 @@
 
   /* Badge */
   .oe-badge {
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing);
@@ -274,7 +276,14 @@
     font-weight: var(--font-weight-medium);
     line-height: var(--text-xs--line-height);
     white-space: nowrap;
+    max-width: 100%;
+    min-width: 0;
   }
+  /* A long value gives way rather than running out of its container. Text in its own element,
+     such as a <span>, ends with an ellipsis; bare text is clipped. A badge with a remove button
+     isn't clipped, so the button keeps its larger hit area. */
+  .oe-badge:not(:has(> .oe-badge-remove)) { overflow: hidden; }
+  .oe-badge > :not(svg, .oe-badge-remove) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .oe-badge > svg { flex: none; width: calc(var(--spacing) * 3); height: calc(var(--spacing) * 3); }
   .oe-badge-dot::before { content: ""; flex: none; width: calc(var(--spacing) * 1.5); height: calc(var(--spacing) * 1.5); border-radius: 50%; background: currentColor; }
   .oe-badge-remove {
@@ -394,9 +403,11 @@
   /* Actions that wait for their row. Only where hovering exists, so touch screens always show them. */
   @media (hover: hover) { .oe-table .oe-table-reveal > * { opacity: 0; } }
   @media (hover: hover) { .oe-table tr:is(:hover, :has(:focus-visible, [aria-expanded="true"])) > .oe-table-reveal > * { opacity: 1; } }
-  .oe-table-link { border-radius: var(--radius-xs); color: inherit; font-weight: var(--font-weight-medium); text-decoration: none; }
+  /* On an <a>, or on a <button> for a row action such as opening a drawer. */
+  .oe-table-link { padding: 0; border: 0; border-radius: var(--radius-xs); background: transparent; color: inherit; font: inherit; font-weight: var(--font-weight-medium); text-align: inherit; text-decoration: none; cursor: pointer; }
   @media (hover: hover) { .oe-table-link:hover { color: var(--fg-link-hover); text-decoration: underline; text-underline-offset: 0.15em; } }
   .oe-table .oe-table-truncate { max-width: calc(var(--spacing) * 60); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .oe-table .oe-table-truncate > .oe-table-link { max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: top; }
   .oe-table td.oe-table-empty { padding-block: calc(var(--spacing) * 8); color: var(--fg-muted); text-align: center; }
   /* Row headers and totals read as cells, with the line above them that rows have. */
   .oe-table :is(tbody, tfoot) th { padding-block: calc(var(--spacing) * 2.5); border-top: 1px solid var(--border-default); border-bottom: 0; color: inherit; }
@@ -436,7 +447,7 @@
   :is(.oe-card, .oe-page, .oe-stack) > .oe-table-wrap { margin-inline: calc(var(--spacing) * -1); }
   .oe-card-head:has(+ .oe-table-wrap) { margin-bottom: calc(var(--spacing) * 2); }
   .oe-table-wrap + .oe-card-foot { margin-top: 0; }
-  :is(.oe-card, .oe-section) > .oe-list { margin-inline: calc(var(--spacing) * -1); }
+  :is(.oe-card, .oe-card-body, .oe-section) > .oe-list { margin-inline: calc(var(--spacing) * -1); }
   .oe-list-text > .oe-progress { margin-top: var(--spacing); }
   /* A flush card has no padding, so its parts bring their own and tables run edge to edge. */
   .oe-card-flush { padding: 0; overflow: hidden; }
@@ -743,6 +754,9 @@
   .oe-progress::-webkit-progress-bar { background: var(--bg-neutral-muted); }
   .oe-progress::-webkit-progress-value { background: var(--bg-accent-emphasis); }
   .oe-progress::-moz-progress-bar { background: var(--bg-accent-emphasis); }
+  /* For bars that compare values, such as a top-N list, so they don't read as a chart series. */
+  .oe-progress-neutral::-webkit-progress-value { background: var(--bg-neutral-emphasis); }
+  .oe-progress-neutral::-moz-progress-bar { background: var(--bg-neutral-emphasis); }
 
   /* Switch. On a checkbox with role="switch". The thumb is a background, because browsers differ on ::before in inputs. */
   .oe-switch {
@@ -869,7 +883,9 @@
     transition: rotate 150ms var(--ease-out);
   }
   .oe-accordion[open] > summary::after { rotate: 225deg; }
-  .oe-accordion > :not(summary) { margin: 0 0 calc(var(--spacing) * 3); color: var(--fg-muted); }
+  .oe-accordion > :not(summary) { margin: 0 0 calc(var(--spacing) * 3); }
+  /* Muted text, at no specificity, so a component inside such as oe-code-block keeps its own color. */
+  :where(.oe-accordion > :not(summary)) { color: var(--fg-muted); }
 
   /* Avatar */
   .oe-avatar {
@@ -899,7 +915,8 @@
   /* Text */
   .oe-link { border-radius: var(--radius-xs); color: var(--fg-link); text-decoration: underline; text-underline-offset: 0.15em; }
   @media (hover: hover) { .oe-link:hover { color: var(--fg-link-hover); } }
-  .oe-code { padding: 0.1em 0.35em; border-radius: var(--radius-sm); background: var(--bg-neutral-muted); color: var(--fg-default); font-family: var(--font-mono); font-size: 0.875em; }
+  /* IDs and hashes break anywhere rather than widening the page. */
+  .oe-code { padding: 0.1em 0.35em; border-radius: var(--radius-sm); background: var(--bg-neutral-muted); color: var(--fg-default); font-family: var(--font-mono); font-size: 0.875em; overflow-wrap: anywhere; }
   .oe-code-block {
     margin: 0;
     padding: calc(var(--spacing) * 4);
@@ -932,7 +949,7 @@
   .oe-prose blockquote { margin-inline: 0; padding-left: 1em; border-left: 2px solid var(--border-strong); color: var(--fg-muted); }
   .oe-prose hr { border: 0; border-top: 1px solid var(--border-default); }
   .oe-prose img { max-width: 100%; height: auto; border-radius: var(--radius-lg); }
-  .oe-prose code { padding: 0.1em 0.35em; border-radius: var(--radius-sm); background: var(--bg-neutral-muted); font-family: var(--font-mono); font-size: 0.875em; }
+  .oe-prose code { padding: 0.1em 0.35em; border-radius: var(--radius-sm); background: var(--bg-neutral-muted); font-family: var(--font-mono); font-size: 0.875em; overflow-wrap: anywhere; }
   .oe-prose pre { padding: calc(var(--spacing) * 4); overflow-x: auto; border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-sunken); font-size: var(--text-xs); line-height: var(--leading-relaxed); }
   .oe-prose pre code { padding: 0; background: transparent; font-size: inherit; }
   .oe-prose table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
@@ -940,19 +957,25 @@
 
   /* Description list, list rows and timeline */
   .oe-dl { display: grid; margin: 0; font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
-  .oe-dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: calc(var(--spacing) * 4); padding-block: calc(var(--spacing) * 3); border-top: 1px solid var(--border-default); }
-  .oe-dl dt { color: var(--fg-muted); }
-  .oe-dl dd { margin: 0; min-width: 0; }
+  /* Label and value sit side by side at 1:2, and stack by themselves below about 22rem, so the
+     list also fits a side column, a drawer or a narrow card. */
+  .oe-dl > div { display: flex; flex-wrap: wrap; gap: var(--spacing) calc(var(--spacing) * 4); padding-block: calc(var(--spacing) * 3); border-top: 1px solid var(--border-default); }
+  .oe-dl dt { flex: 1 1 calc(var(--spacing) * 28); min-width: 0; color: var(--fg-muted); }
+  .oe-dl dd { flex: 2 1 calc(var(--spacing) * 56); margin: 0; min-width: 0; }
   .oe-card-head + .oe-dl > :first-child { padding-top: 0; border-top: 0; }
   .oe-card > .oe-dl > :last-child { padding-bottom: 0; }
   .oe-list { margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
-  .oe-list > * + * { border-top: 1px solid var(--border-default); }
+  /* Hidden rows, such as ones a filter removed, don't count, so no stray line shows. */
+  .oe-list > :not([hidden]) ~ :not([hidden]) { border-top: 1px solid var(--border-default); }
   .oe-list-item { box-sizing: border-box; display: flex; align-items: center; gap: calc(var(--spacing) * 3); min-width: 0; padding: calc(var(--spacing) * 3) var(--spacing); color: inherit; text-decoration: none; }
   .oe-list-item > svg { flex: none; width: calc(var(--spacing) * 4); height: calc(var(--spacing) * 4); color: var(--fg-muted); }
   @media (hover: hover) { a.oe-list-item:hover { background: var(--bg-hover); } }
   .oe-list-text { flex: 1; min-width: 0; }
   .oe-list-title { display: block; overflow: hidden; font-weight: var(--font-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
   .oe-list-subtitle { display: block; overflow: hidden; color: var(--fg-muted); font-size: var(--text-xs); line-height: var(--text-xs--line-height); text-overflow: ellipsis; white-space: nowrap; }
+  /* A description reads in full, or in up to two lines. An identifier keeps the one-line default. */
+  .oe-list-subtitle-wrap { overflow-wrap: anywhere; white-space: normal; }
+  .oe-list-subtitle-clamp { display: -webkit-box; overflow-wrap: anywhere; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
   .oe-timeline { margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
   .oe-timeline-item { position: relative; display: flex; gap: calc(var(--spacing) * 3); padding-bottom: calc(var(--spacing) * 5); }
   .oe-timeline-item:last-child { padding-bottom: 0; }
@@ -1052,15 +1075,20 @@
   /* Tabs in the bar fill its height, so the selected line sits on the bar's own border. */
   .oe-topbar .oe-tabs { flex-wrap: nowrap; align-self: stretch; min-width: 0; margin-bottom: -1px; overflow-x: auto; border-bottom: 0; scrollbar-width: none; }
   .oe-topbar .oe-tabs > * { flex: none; margin-bottom: 0; white-space: nowrap; }
+  .oe-topbar > .oe-btn { flex: none; }
   .oe-topbar-actions { display: flex; flex: none; align-items: center; gap: calc(var(--spacing) * 1); margin-left: auto; }
   /* The breadcrumb gives way first, so a long name can't push the page wider than the screen. */
-  .oe-breadcrumb { min-width: 0; overflow: hidden; margin-left: calc(var(--spacing) * 1); font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
+  .oe-breadcrumb { flex: 0 1000 auto; min-width: 0; overflow: hidden; margin-left: calc(var(--spacing) * 1); font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
   .oe-breadcrumb ol { display: flex; align-items: center; gap: calc(var(--spacing) * 2); margin: 0; padding: 0; list-style: none; white-space: nowrap; }
   .oe-breadcrumb li { display: flex; align-items: center; gap: calc(var(--spacing) * 2); min-width: 0; color: var(--fg-muted); }
   .oe-breadcrumb li + li::before { content: "/"; content: "/" / ""; }
   .oe-breadcrumb a { border-radius: var(--radius-xs); color: var(--fg-muted); text-decoration: none; }
   @media (hover: hover) { .oe-breadcrumb a:hover { color: var(--fg-default); } }
-  .oe-breadcrumb [aria-current="page"] { overflow: hidden; color: var(--fg-default); font-weight: var(--font-weight-medium); text-overflow: ellipsis; }
+  /* Each part shrinks in proportion to its length and ends with an ellipsis. A flex container
+     can't put an ellipsis on its own text, so the current page is a block with the separator inline. */
+  .oe-breadcrumb li > a { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .oe-breadcrumb [aria-current="page"] { display: block; overflow: hidden; color: var(--fg-default); font-weight: var(--font-weight-medium); text-overflow: ellipsis; }
+  .oe-breadcrumb [aria-current="page"]::before { margin-right: calc(var(--spacing) * 2); }
   .oe-sidenav {
     box-sizing: border-box;
     flex-direction: column;
@@ -1156,6 +1184,8 @@
   .oe-split { display: flex; flex-wrap: wrap; align-items: flex-start; gap: calc(var(--spacing) * 6); }
   .oe-split > * { flex: 999 1 calc(var(--spacing) * 120); min-width: 0; }
   .oe-split > .oe-split-side { flex: 1 1 calc(var(--spacing) * 72); }
+  /* Stays in view below the top bar beside a long main column. Only for a side column shorter than the screen. */
+  .oe-split-side-sticky { position: sticky; top: calc(var(--oe-topbar-height, 0px) + env(safe-area-inset-top, 0px) + calc(var(--spacing) * 6)); }
   .oe-section { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 4) calc(var(--spacing) * 8); }
   .oe-section > :first-child { flex: 1 1 calc(var(--spacing) * 56); min-width: 0; }
   .oe-section > :last-child { flex: 2 1 calc(var(--spacing) * 96); min-width: 0; }
@@ -1225,11 +1255,12 @@
     .oe-field-inline { grid-template-columns: minmax(0, 1fr); }
     .oe-field-inline > .oe-field-label { padding-top: 0; }
     .oe-field-inline > :not(.oe-field-label) { grid-column: auto; }
-    .oe-dl > div { grid-template-columns: minmax(0, 1fr); gap: var(--spacing); }
     .oe-hide-narrow { display: none; }
     .oe-table :is(th, td) { padding-inline: calc(var(--spacing) * 1.5); }
     /* A truncated cell takes what the other columns leave, so the table fits without scrolling. */
     .oe-table .oe-table-truncate { width: 100%; max-width: 0; }
+    /* Plain and flush cards inset their content the same, so stacked titles line up. */
+    .oe-card:not(.oe-card-flush) { padding-inline: calc(var(--spacing) * 3); }
     .oe-card-flush > :is(.oe-card-head, .oe-card-body, .oe-card-foot, .oe-toolbar) { padding-inline: calc(var(--spacing) * 3); }
     .oe-card-flush > .oe-table-wrap .oe-table :is(th, td):first-child { padding-left: calc(var(--spacing) * 3); }
     .oe-card-flush > .oe-table-wrap .oe-table :is(th, td):last-child { padding-right: calc(var(--spacing) * 3); }
