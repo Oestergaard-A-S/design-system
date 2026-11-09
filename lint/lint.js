@@ -24,6 +24,9 @@ const RESET_PROPS = /(?:^|[\s;])(?:color|background(?:-color)?|border(?:-[a-z]+)
 // Where a component sits is the app's call. Anything else changes how it looks.
 const PLACEMENT_PROP = /^(?:--.*|margin.*|grid.*|flex|flex-(?:grow|shrink|basis)|order|(?:align|justify|place)-self|(?:min-|max-)?width|anchor-name|position-anchor|container.*)$/;
 const LOOK_UTILITY = /^(?:p[xytrblse]?-|bg-|text-|border|rounded|shadow|font-|leading-|tracking-|ring|outline|opacity-)/;
+// Classes that only place, hide or size an element and give it no look of their own. Styling an
+// element that carries one of these isn't restyling a component.
+export const HELPER_CLASSES = new Set(['oe-hide-narrow', 'oe-sr-only', 'oe-stack', 'oe-stat-grid', 'oe-panels', 'oe-split', 'oe-split-side', 'oe-split-side-sticky', 'oe-page-narrow', 'oe-table-truncate']);
 const DEPRECATED_ICONS = { 'lucide-vue-next': '@lucide/vue', 'lucide-svelte': '@lucide/svelte', 'lucide-angular': '@lucide/angular' };
 
 /**
@@ -141,7 +144,7 @@ const restyledMessage = (/** @type {string} */ what, /** @type {string} */ how) 
  */
 const restyledClass = (selector, classes) => {
   const flat = selector.replace(/:(?:global|deep)\(([^()]*)\)/g, '$1').replace(/\([^()]*\)|\[[^\]]*\]/g, '');
-  const known = (/** @type {string} */ text) => [...text.matchAll(/\.(oe-[\w-]+)/g)].map((m) => m[1]).find((c) => classes.has(c));
+  const known = (/** @type {string} */ text) => [...text.matchAll(/\.(oe-[\w-]+)/g)].map((m) => m[1]).find((c) => classes.has(c) && !HELPER_CLASSES.has(c));
   for (const part of flat.split(',')) {
     const m = part.trim().match(/^(?:(.*?)\s*([\s>+~])\s*)?([^\s>+~]+)$/);
     if (!m) continue;
@@ -164,7 +167,7 @@ const checkMarkup = (clean, data, report) => {
     if (name !== name.toLowerCase() || /\{\s*\.\.\.|v-bind\s*=/.test(attrs)) continue;
 
     const style = attrs.match(/(?:^|\s)style\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\{([^}]*)\}\})/);
-    const component = style && [...attrs.matchAll(/(?:^|[^\w-])(oe-[\w-]+)/g)].map((m) => m[1]).find((c) => data.classes.has(c));
+    const component = style && [...attrs.matchAll(/(?:^|[^\w-])(oe-[\w-]+)/g)].map((m) => m[1]).find((c) => data.classes.has(c) && !HELPER_CLASSES.has(c));
     if (style && component) {
       const props = style[3] === undefined ? [...(style[1] ?? style[2]).matchAll(/(?:^|;)\s*([\w-]+)\s*:/g)] : [...style[3].matchAll(/(?:^|,)\s*['"]?([\w-]+)['"]?\s*:/g)];
       const look = props.map((m) => m[1].replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)).filter((prop) => !PLACEMENT_PROP.test(prop));
@@ -337,7 +340,7 @@ export const lintFiles = (files, data) => {
         const hasVariant = name.includes(':');
         const base = variantless.replace(/!$/, '').replace(/\/(?:\d+|\[[^\]]*\])$/, '');
 
-        const component = names.find((n) => data.classes.has(n));
+        const component = names.find((n) => data.classes.has(n) && !HELPER_CLASSES.has(n));
         if (component && LOOK_UTILITY.test(base)) report(offset, 'warning', 'restyled-component', restyledMessage(component, name));
 
         if (variants.slice(0, -1).includes('dark')) report(offset, 'error', 'no-dark-overrides', `${name}: tokens already change with the mode, so remove this.`);

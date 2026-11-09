@@ -247,7 +247,7 @@ export const legacySamples: { id: string; title: string; category: Category; htm
           <p>Styled <a href="#">links</a>, <code>code</code> and lists, for text that can't carry classes.</p>
           <ul><li>Headings and paragraphs</li><li>Tables and quotes</li></ul>
         </div>
-        <pre class="oe-code-block" style="margin-top:var(--space-3)"><code>npx oe-lint src</code></pre>
+        <pre class="oe-code-block" style="margin-top:var(--space-3)"><code>npm run lint:ui</code></pre>
       </div>` },
   { id: 'loading', title: 'Loading', category: 'Feedback', html: `      <div id="loading" class="oe-card demo">
         <h2 class="card-title">Loading</h2>
@@ -261,6 +261,7 @@ export const legacySamples: { id: string; title: string; category: Category; htm
             <span class="oe-skeleton"></span>
           </div>
           <progress class="oe-progress" value="60" max="100" aria-label="Upload progress"></progress>
+          <progress class="oe-progress oe-progress-neutral" value="35" max="100" aria-label="Share of revenue"></progress>
         </div>
       </div>` },
   { id: 'switch-and-search', title: 'Switch and search', category: 'Forms', html: `      <div id="switch-and-search" class="oe-card demo">

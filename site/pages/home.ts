@@ -96,7 +96,10 @@ const USAGE_TABS: [string, string, string][] = [
     'agents',
     'Agents',
     `${code(`Follow node_modules/@oestergaard/design-tokens/AGENT-GUIDE.md for all UI work.
-Run npx oe-lint src before finishing, and fix every error.`)}`,
+Run the lint:ui script before finishing, and fix every error and warning.`)}
+    ${code(`"scripts": {
+  "lint:ui": "oe-lint src --max-warnings 0"
+}`)}`,
   ],
   [
     'native',

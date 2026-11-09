@@ -443,3 +443,12 @@ test('product navigation stays horizontal and resource text stays within its car
     expect(await page.locator('.oe-resource-option').evaluateAll(nodes => nodes.every(node => node.scrollWidth <= node.clientWidth))).toBe(true);
   }
 });
+
+test('adoption examples remain available after the gallery refactor', async ({ page }) => {
+  await page.goto('components/#loading');
+  await expect(page.getByRole('progressbar', {name:'Upload progress',exact:true})).toHaveAttribute('value','60');
+  await expect(page.getByRole('progressbar', {name:'Share of revenue',exact:true})).toBeVisible();
+  await expect(page.getByRole('progressbar', {name:'Share of revenue',exact:true})).toHaveAttribute('value','35');
+  await page.goto('components/#text');
+  await expect(page.locator('#text').getByText('npm run lint:ui', {exact:true})).toBeVisible();
+});
