@@ -50,10 +50,10 @@ const savedSidenav = () => {
 };
 
 const mountCopy = () => {
-  const toast = document.querySelector<HTMLElement>('#clipboard-toast')!;
+  const toast = document.querySelector<HTMLElement>('#toast')!;
   let timer = 0;
   const copy = async (text: string) => {
-    let message = 'Copied to clipboard';
+    let message = `Copied ${text}`;
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -70,7 +70,7 @@ const mountCopy = () => {
     if (copyable) copy(copyable.dataset.copy!);
     const codeBtn = target.closest<HTMLElement>('[data-copy-code]');
     if (codeBtn) copy(codeBtn.parentElement!.querySelector('code')!.textContent!);
-    if (target.closest('.demo a[href="#"]')) e.preventDefault();
+    if (target.closest('.demo a')) e.preventDefault();
   });
 };
 
@@ -111,7 +111,7 @@ export const mountPage = (id: PageId, main: string) => {
         <main class="oe-page" id="main">${main}</main>
       </div>
     </div>
-    <div id="clipboard-toast" class="oe-toast toast" role="status" aria-live="polite"></div>`,
+    <div id="toast" class="oe-toast toast" role="status" aria-live="polite"></div>`,
   );
   mountTheme();
   mountSidenav();
